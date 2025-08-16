@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "author": "Neeraj Vidhani",
+  "license": "ISC",
+  "dependencies": {
+    "@clerk/express": "^1.7.21",
+    "axios": "^1.11.0",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-jwt": "^8.5.1",
+    "jwks-rsa": "^3.2.0",
+    "mongoose": "^8.17.1",
+    "svix": "^1.71.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
