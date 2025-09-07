@@ -1,14 +1,15 @@
 import React from 'react'
 import DashBoardNav from '../ui/DashBoardNav'
-import { useAuth0 } from '@auth0/auth0-react';
+
 import { TradingDashboard } from './TradingDashboard';
 import { StockList } from './StockList';
 import { Portfolio } from './PortfolioProps';
 import { TradeHistory } from './TradeHistory';
+import useLiveTrading from "../../../hooks/useLiveTrading.js";
 
 
 const Dashboard = () => {
-  const { user, isAuthenticated, isLoading } = useAuth0();
+const { tradingHistory } = useLiveTrading();
   return (
     <div className='dashboard text-black bg-white min-h-screen'>
       <DashBoardNav/>
@@ -23,7 +24,7 @@ const Dashboard = () => {
         </div>
         
         {/* Trade History */}
-        <TradeHistory  />
+        <TradeHistory trades={tradingHistory}  />
       </main>
     </div>
   )

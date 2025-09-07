@@ -6,6 +6,8 @@
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 // import { Position } from '@/types/trading';
 // import { useState } from 'react';
+import useLiveTrading from "../../../hooks/useLiveTrading.js";
+
 
 // interface PortfolioProps {
 //   positions: Position[];
@@ -13,7 +15,9 @@ import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 // }
 
 export const Portfolio = () => {
-  const positions = [] ;
+  const { me, prices, buy, sell } = useLiveTrading();
+  const positions = Array.isArray(me?.portfolio) ? me.portfolio : [];
+  
   // const [selectedPosition, setSelectedPosition] = useState<Position | null>(null);
   // const [shares, setShares] = useState<number>(1);
   // const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -50,18 +54,24 @@ export const Portfolio = () => {
   return (
     <div  className="p-3 rounded-xl shadow-lg">
       <div >
-        <div  className="text-foreground">Your Portfolio</div>
+        <div  className='text-3xl mb-2 font-semibold'>Your Portfolio</div>
       </div >
       <div >
-        <div className="space-y-4">
-          {/* {positions.map((position) => ( */}
-            <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-secondary/50">
+        <div className="space-y-4 overflow-scroll overflow-x-hidden [&::-webkit-scrollbar]:hidden h-90">
+          {positions.map((row) => {
+            const last = prices[row.symbol] ?? row.currentPrice ?? row.avgBuyPrice;
+            const pnl = (last - row.avgBuyPrice) * row.quantity;
+            const pnlPercent = ((last - row.avgBuyPrice) / row.avgBuyPrice) * 100;
+            const totalValue = last * row.quantity;
+
+            return  ( 
+            <div key={row.symbol} className="flex items-center justify-between pt-4 pb-4 pl-2 pr-2 shadow-xl rounded-lg">
               <div className="flex-1">
                 <div className="flex items-center space-x-3">
                   <div>
-                    <h3 className="font-semibold text-foreground">AAPL</h3>
+                    <h3 className="font-semibold text-foreground">{row.symbol}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {/* {position.shares} shares @ ${position.avgPrice.toFixed(2)} */}5.3
+                      {row.quantity} shares @ ₹{row.avgBuyPrice.toFixed(2)}
                     </p>
                   </div>
                 </div>
@@ -69,78 +79,38 @@ export const Portfolio = () => {
               
               <div className="text-right">
                 <div className="text-lg font-bold text-foreground">
-                  {/* ${position.totalValue.toFixed(2)} */}2.5
+                  ₹{totalValue.toFixed(2)}
                 </div>
-                <div className={`flex items-center text-sm ${position.gainLoss >= 0 ? 'text-success' : 'text-danger'}`}>
-                  {/* {position.gainLoss >= 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />} */}666.666
-                  {/* {position.gainLoss >= 0 ? '+' : ''}${position.gainLoss.toFixed(2)} ({position.gainLossPercent >= 0 ? '+' : ''}{position.gainLossPercent.toFixed(2)}%) */}
-                </div>
+                 <div
+                    className={`flex items-center text-sm ${
+                      pnl >= 0 ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
+                    {pnl >= 0 ? (
+                      <TrendingUp className="h-3 w-3 mr-1" />
+                    ) : (
+                      <TrendingDown className="h-3 w-3 mr-1" />
+                    )}
+                    {pnl >= 0 ? "+" : ""}
+                    ₹{pnl.toFixed(2)} ({pnlPercent.toFixed(2)}%)
+                  </div>
               </div>
               
               <button 
                 size="sm" 
-                variant="outline"
-                className="ml-4 border-danger text-danger hover:bg-danger hover:text-danger-foreground"
-                onClick={() => openSellDialog(position)}
+                className="ml-4 bg-primary text-md flex items-center bg-red-500 p-3 rounded-xl font-semibold hover:bg-red-600"
+                // onClick={() => openSellDialog(position)}
+                onClick={() => sell(row.symbol, 1)}
               >
                 <Minus className="h-4 w-4 mr-1" />
                 Sell
               </button>
             </div>
-          {/* ))} */}
+              )
+           })} 
         </div>
 
-        <div  open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <div  className="bg-card border-border">
-            <div >
-              <div  className="text-foreground">
-                Sell {selectedPosition?.symbol} - ${selectedPosition?.currentPrice.toFixed(2)}
-              </div >
-            </div >
-            <div className="space-y-4">
-              <div>
-                <div  htmlFor="shares" className="text-foreground">Number of Shares</div >
-                <div 
-                  id="shares"
-                  type="number"
-                  min="1"
-                  // max={selectedPosition?.shares || 1}
-                  // value={shares}
-                  // onChange={(e) => setShares(Number(e.target.value))}
-                  className="bg-input border-border text-foreground"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Available: 5 shares
-                </p>
-              </div>
-              
-              <div className="p-4 bg-secondary/50 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Total Proceeds:</span>
-                  <span className="font-bold text-foreground">
-                    {/* ${selectedPosition ? (selectedPosition.currentPrice * shares).toFixed(2) : '0.00'} */}8.88
-                  </span>
-                </div>
-              </div>
-              
-              <div className="flex space-x-2">
-                <button 
-                  // variant="outline" 
-                  // onClick={() => setIsDialogOpen(false)}
-                  className="flex-1 border-border text-foreground hover:bg-secondary"
-                >
-                  Cancel
-                </button>
-                <button 
-                  // onClick={handleSell}
-                  className="flex-1 bg-danger text-danger-foreground hover:bg-danger/90"
-                >
-                  Sell Shares
-                </button>
-              </div>
-            </div>
-          </div >
-        </div >
+      
       </div >
     </div>
   );

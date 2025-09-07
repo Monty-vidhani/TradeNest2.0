@@ -3,58 +3,56 @@
 // import { Input } from '@/components/ui/input';
 // import { Label } from '@/components/ui/label';
 // import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { TrendingUp, TrendingDown, ShoppingCart } from 'lucide-react';
+import { TrendingUp, TrendingDown, ShoppingCart, Bitcoin } from 'lucide-react';
 // import { Stock } from '@/types/trading';
 import { useState } from 'react';
+import useLiveTrading from "../../../hooks/useLiveTrading.js";
 
-// interface StockListProps {
-//   stocks: Stock[];
-//   onBuyStock: (symbol: string, shares: number) => void;
-// }
+
 
 export const StockList = () => {
-    const stock = [] ;
+  const { me, prices, buy, sell } = useLiveTrading();
+    // const stock = [] ;
   const [selectedStock, setSelectedStock] = useState(null);
   const [shares, setShares] = useState(1);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-//   const handleBuy = () => {
-//     if (selectedStock && shares > 0) {
-//       onBuyStock(selectedStock.symbol, shares);
-//       setIsDialogOpen(false);
-//       setShares(1);
-//     }
-//   };
+  const handleBuy = () => {
+    // if (selectedStock && shares > 0) {
+    //   onBuyStock(selectedStock.symbol, shares);
+    //   setIsDialogOpen(false);
+    //   setShares(1);
+    // }
+  };
 
   const openBuyDialog = (stock) => {
     setSelectedStock(stock);
     setIsDialogOpen(true);
   };
-
   return (
     <div  className="shadow-lg p-3 rounded-xl">
       <div >
         <h1 className='text-3xl mb-2 font-semibold'>Market Overview</h1>
       </div >
       <div >
-        <div className="space-y-4">
-          {/* {stocks.map((stock) => ( */}
-            <div  className="flex items-center justify-between p-4 rounded-lg border">
-              <div className="flex-1">
-                <div className="flex items-center space-x-3">
+        <div className="space-y-4 overflow-scroll overflow-x-hidden [&::-webkit-scrollbar]:hidden h-90">
+           {Object.entries(prices).slice(0,10).map(([sym, p]) => (
+            <div key={sym}  className="flex items-center justify-between pt-4 pb-4 pl-2 pr-2 shadow-xl rounded-lg">
+              <div className=" flex-1">
+                <div className="flex  items-center space-x-3">
                   <div>
-                    <h3 className="font-semibold text-foreground">AAPL</h3>
-                    <p className="text-sm text-muted-foreground">Apple</p>
+                    <h3 className="font-semibold text-sm lg:text-lg md:text-xl text-foreground flex items-center "><Bitcoin/>{sym}</h3>
+                    {/* <p className="text-sm text-muted-foreground">Apple</p> */}
                   </div>
                 </div>
               </div>
               
-              <div className="text-right">
-                <div className="text-xl font-bold">
-                  {/* ${stock.price.toFixed(2)} */}4.88
+              <div className="text-left">
+                <div className="text-sm lg:text-xl md:text-xl font-semibold">
+                  {/* ${stock.price.toFixed(2)} */}₹{p.toFixed(2)}
                 </div>
                 <div className={`flex items-center text-sm `}>
-                  {/* {stock.change >= 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />} */}5.5%
+                  {/* {stock.change >= 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />} */}{(Math.random()).toFixed(2)+'%'}
                   {/* {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)} ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%) */}
                 </div>
               </div>
@@ -62,13 +60,13 @@ export const StockList = () => {
               <button 
                 size="sm" 
                 className="ml-4 bg-primary text-md flex items-center bg-green-500 p-3 rounded-xl font-semibold hover:bg-green-600"
-                // onClick={() => openBuyDialog(stock)}
+                onClick={() => buy(sym, 1)}
               >
                 <ShoppingCart className="h-4 w-4 mr-1" />
                 Buy
               </button>
             </div>
-           {/* ))} */}
+            ))} 
         </div>
 
       {/* <div 

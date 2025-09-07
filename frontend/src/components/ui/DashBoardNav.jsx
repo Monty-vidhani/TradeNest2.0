@@ -51,7 +51,7 @@ const DashBoardNav = () => {
           </button>
           
          <div className="flex items-center space-x-4">
-           {!dbUser?<p className='flex flex-row font-semibold text-xl items-center'><IndianRupee className='h-5 w-5'/><span className='text-lg animate-pulse'>Loading....</span></p>:<p className='flex flex-row font-semibold text-xl items-center'><IndianRupee className='h-5 w-5'/><span className='text-lg'>{dbUser.cashBalance}</span></p>}
+           {/* {!dbUser?<p className='flex flex-row font-semibold text-xl items-center'><IndianRupee className='h-5 w-5'/><span className='text-lg animate-pulse'>Loading....</span></p>:<p className='flex flex-row font-semibold text-xl items-center'><IndianRupee className='h-5 w-5'/><span className='text-lg'>{dbUser.cashBalance.toFixed(2)}</span></p>} */}
             <UserButton/>
           </div>
         </div>

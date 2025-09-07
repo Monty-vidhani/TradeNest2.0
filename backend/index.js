@@ -7,30 +7,31 @@ import User from "./models/User.js";
 import userRoutes from "./routes/UserRoutes.js";
 import cors from "cors";
 import { requireAuth } from "@clerk/express";
-
+import http from "http";
+import { Server } from "socket.io";
+import { startFinnhubWS } from "./services/market.js";
+import tradeRoutes from "./routes/tradeRoutes.js";
 
 
 
 dotenv.config();
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 7000;
-app.use(cors({
-  origin: "http://localhost:5173", // your frontend URL
-  credentials: true // if you are sending cookies/auth headers
-}));
+const io = new Server(server, {
+  cors: { origin: process.env.CLIENT_ORIGIN, methods: ["GET","POST"] }
+});
 
-app.use("/api/users", userRoutes);
 
-connectDB()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("Failed to connect to DB", err);
-    process.exit(1);
+app.use((req, _res, next) => { req.io = io; next(); });
+
+
+io.on("connection", (socket) => {
+  socket.on("join", ({ clerkUserId }) => {
+    if (clerkUserId) socket.join(clerkUserId);
   });
+});
+
 
 // ✅ Webhook endpoint
 app.post(
@@ -60,10 +61,10 @@ app.post(
         console.log("Creating user with Clerk ID:", clerkUserId);
 
         // Check if this user already exists (prevents accidental duplicates)
-        const existingUser = await User.findOne({ clerkUserId });
-        if (existingUser) {
-          console.log("User already exists in DB. Skipping creation.");
-        } else {
+        // const existingUser = await User.findOne({ clerkUserId });
+        // if (existingUser) {
+        //   console.log("User already exists in DB. Skipping creation.");
+        // } else {
           const newUser = new User({
             clerkUserId,
             firstName,
@@ -72,7 +73,7 @@ app.post(
 
           await newUser.save();
           console.log(" New user saved to MongoDB:", clerkUserId);
-        }
+        // }
       }
 
       res.status(200).json({
@@ -88,3 +89,36 @@ app.post(
     }
   }
 );
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(cors({
+  origin:process.env.CLIENT_ORIGIN , 
+  credentials: true 
+}));
+
+app.use("/api/users", userRoutes);
+app.use("/api/trades", tradeRoutes);
+
+
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to DB", err);
+    process.exit(1);
+  });
+  
+
+  startFinnhubWS({
+  apiKey: process.env.FINNHUB_API_KEY,
+  onPrice: ({ symbol, price }) => io.emit("price:tick", { symbol, price })
+});
+
+
+
+server.listen(PORT, () => console.log(`Server running on ${PORT}`));

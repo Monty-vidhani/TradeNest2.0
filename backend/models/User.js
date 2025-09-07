@@ -4,12 +4,15 @@ const portfolioItemSchema = new mongoose.Schema({
   symbol: { type: String, required: true }, 
   quantity: { type: Number, required: true, min: 0 }, 
   avgBuyPrice: { type: Number, required: true, min: 0 }, 
-  currentPrice: { type: Number, default: 0 }, 
+   
 });
 
-const watchlistItemSchema = new mongoose.Schema({
-  symbol: { type: String, required: true }, 
-  addedAt: { type: Date, default: Date.now }, 
+const tradeSchema = new mongoose.Schema({
+  symbol: { type: String, required: true },
+  type: { type: String, enum: ['buy', 'sell'], required: true },
+  quantity: { type: Number, required: true, min: 1 },
+  price: { type: Number, required: true, min: 0 },
+  date: { type: Date, default: Date.now }
 });
 
 const userSchema = new mongoose.Schema(
@@ -27,16 +30,9 @@ const userSchema = new mongoose.Schema(
     portfolio: [portfolioItemSchema], 
 
 
-    watchlist: [watchlistItemSchema], 
+    tradingHistory: [tradeSchema],
 
-
-    createdAt: { type: Date, default: Date.now() }, 
-
-
-    updatedAt: { type: Date, default: Date.now() }, 
-
-  }
-  // { timestamps: true } 
+  },{ timestamps: true }
 );
 const User =  mongoose.model("User", userSchema);
 
