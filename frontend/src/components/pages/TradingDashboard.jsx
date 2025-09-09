@@ -10,7 +10,7 @@ export const TradingDashboard = () => {
 const {me} = useLiveTrading();
 let AvailableCash = parseFloat(me.cashBalance) ;
   const positions = me?.portfolio || [];
-    const loading = !me || me.cashBalance === undefined;
+const loading = !me || me.cashBalance === undefined;
 
 // const portfolioGain = me.portfolioValue - me.investedValue; 
 // const portfolioGainPercent = (portfolioGain / me.investedValue) * 100; 
@@ -31,7 +31,7 @@ if (!me) return <div className='mb-5 text-3xl font-semibold flex justify-center 
           <div className="text-2xl font-bold text-foreground">
             {/* ${portfolio.totalValue.toLocaleString('en-US', { minimumFractionDigits: 2 })} */} 
            {loading ? (
-            <div>loading</div>
+            <div className='animate-pulse text-3xl'>--</div>
           ) : (
             <div className="text-2xl font-bold text-foreground">
               ₹{Number(me?.portfolioValue ?? 0).toFixed(2)}
@@ -59,10 +59,16 @@ if (!me) return <div className='mb-5 text-3xl font-semibold flex justify-center 
           <Activity className="h-4 w-4 text-muted-foreground" />
         </div >
         <div >
-          <div className="text-2xl font-bold text-foreground">
-           
-             ₹{AvailableCash.toFixed(2)}
-          </div>
+          {loading ? (
+            <div className='animate-pulse text-3xl'>--</div>
+          ) : (
+            <div className="text-2xl font-bold text-foreground">
+                ₹{AvailableCash.toFixed(2)}
+            </div>
+          )}
+          {/* <div className="text-2xl font-bold text-foreground">
+            ₹{AvailableCash.toFixed(2)}
+          </div> */}
           <p className="text-xs text-muted-foreground">
             Ready to invest
           </p>
@@ -96,9 +102,16 @@ if (!me) return <div className='mb-5 text-3xl font-semibold flex justify-center 
           <PieChart className="h-4 w-4 text-muted-foreground" />
         </div >
         <div >
-          <div className="text-2xl font-bold text-foreground">
+           {loading ? (
+            <div className='animate-pulse text-3xl'>--</div>
+          ) : (
+            <div className="text-2xl font-bold text-foreground">
+              {positions.length}
+            </div>
+          )}
+          {/* <div className="text-2xl font-bold text-foreground">
             {positions.length}
-          </div>
+          </div> */}
           <p className="text-xs text-muted-foreground">
             Holdings
           </p>
