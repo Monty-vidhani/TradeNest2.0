@@ -65,8 +65,9 @@ export const Portfolio = () => {
             const totalValue = last * row.quantity;
 
             return  ( 
-            <div key={row.symbol} className="flex items-center justify-between pt-4 pb-4 pl-2 pr-2 shadow-xl rounded-lg">
-              <div className="flex-1">
+            <div key={row.symbol} className="flex  items-center  justify-between flex-col lg:flex-row md:flex-row p-2 gap-2 shadow-xl rounded-lg">
+             <div className='flex justify-between items-center lg:w-17/20 md:w-9/10 w-full '>
+               <div className="flex-1">
                 <div className="flex items-center space-x-3">
                   <div>
                     <h3 className="font-semibold text-foreground">{row.symbol}</h3>
@@ -95,10 +96,11 @@ export const Portfolio = () => {
                     ₹{pnl.toFixed(2)} ({pnlPercent.toFixed(2)}%)
                   </div>
               </div>
+             </div>
               
               <button 
                 size="sm" 
-                className="ml-4 bg-primary text-md flex items-center bg-red-500 p-3 rounded-xl font-semibold hover:bg-red-600"
+                className="bg-primary text-md flex items-center bg-red-500 lg:w-3/20 md:w-1/10 md:p-3 p-1 w-full justify-center rounded-xl font-semibold hover:bg-red-600"
                 // onClick={() => openSellDialog(position)}
                 onClick={() => sell(row.symbol, 1)}
               >
